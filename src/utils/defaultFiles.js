@@ -7,6 +7,10 @@ const deafultFiles = [
     id: 2,
     title: '斗罗大陆',
   },
+  {
+    id: 3,
+    title: '大主宰',
+  },
 ];
 
 export default deafultFiles;
