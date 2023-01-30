@@ -1,0 +1,18 @@
+.fileTitle {
+  padding: 7px 0;
+}
+
+.FileSearchInput {
+  margin-right: 10px;
+}
+
+.c-link {
+  cursor: pointer;
+}
+
+.icon-button {
+  background: none;
+  outline: none;
+  border: none;
+  color: inherit;
+}
