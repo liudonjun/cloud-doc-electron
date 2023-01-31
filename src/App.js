@@ -1,6 +1,6 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "easymde/dist/easymde.min.css";
+import 'easymde/dist/easymde.min.css';
 import React, { useState } from 'react';
 import { faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons';
 import FileSearch from './components/FileSearch';
@@ -114,6 +114,7 @@ function App() {
                 onCloseTab={tabClose}
               />
               <SimpleMDE
+                id="SimpleMDE"
                 key={activeFile && activeFile.id}
                 value={activeFile && activeFile.body}
                 onChange={(value) => {
@@ -121,6 +122,7 @@ function App() {
                 }}
                 options={{
                   minHeight: '600px',
+                  spellChecker: false,
                 }}
               />
               {/* { activeFile.isSynced && 

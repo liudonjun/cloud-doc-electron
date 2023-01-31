@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import useKeyPress from '../hooks/useKeyPress';
 
 const FileSearch = ({ title, onFileSearch }) => {
@@ -43,7 +43,7 @@ const FileSearch = ({ title, onFileSearch }) => {
             type="button"
             className="icon-button"
           >
-            <FontAwesomeIcon title="搜索" size="lg" icon={faMagnifyingGlass} />
+            <FontAwesomeIcon title="搜索" size="lg" icon={faSearch} />
           </button>
         </>
       )}
