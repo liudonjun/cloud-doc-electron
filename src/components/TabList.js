@@ -1,33 +1,42 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import './TabList.less'
+import './TabList.scss';
 
 const TabList = ({ files, activeId, unsaveIds, onTabClick, onCloseTab }) => {
   return (
     <ul className="nav nav-pills tablist-component">
       {files.map((file) => {
+        const withUnsavedMark = unsaveIds.includes(file.id);
         const fClassName = classNames({
-          'nav-link ': true,
+          'nav-link': true,
           'active': file.id === activeId,
+          'withUnsaved': withUnsavedMark,
         });
         return (
           <li className="nav-item" key={file.id}>
-            {/* active */}
             <a
+              href="#"
               className={fClassName}
-              href="javascript;"
               onClick={(e) => {
                 e.preventDefault();
                 onTabClick(file.id);
               }}
             >
-              <span>{file.title}</span>
-              <span className="ml-2">
-                <FontAwesomeIcon title="搜索" icon={faTimes} />
+              {file.title}
+              <span
+                className="ml-2 close-icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onCloseTab(file.id);
+                }}
+              >
+                <FontAwesomeIcon icon={faTimes} />
               </span>
+              {withUnsavedMark && <span className="rounded-circle ml-2 unsaved-icon"></span>}
             </a>
           </li>
         );
@@ -43,7 +52,6 @@ TabList.propTypes = {
   onTabClick: PropTypes.func,
   onCloseTab: PropTypes.func,
 };
-
 TabList.defaultProps = {
   unsaveIds: [],
 };

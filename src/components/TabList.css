@@ -1,9 +1,0 @@
-.tablist-component .close-icon {
-  visibility: hidden;
-}
-.tablist-component .nav-link:hover .close-icon {
-  visibility: visible;
-}
-.tablist-component .nav-link:active .close-icon {
-  visibility: visible;
-}

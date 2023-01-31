@@ -41,8 +41,12 @@ function App() {
         <div className="col-9 right-panel">
           <TabList
             activeId={1}
+            unsaveIds={[1, 2]}
             files={deafultFiles}
             onTabClick={(id) => {
+              console.log(id);
+            }}
+            onCloseTab={(id) => {
               console.log(id);
             }}
           />
