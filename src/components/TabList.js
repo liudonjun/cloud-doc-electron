@@ -18,7 +18,7 @@ const TabList = ({ files, activeId, unsaveIds, onTabClick, onCloseTab }) => {
         return (
           <li className="nav-item" key={file.id}>
             <a
-              href="#"
+              href="javascript;"
               className={fClassName}
               onClick={(e) => {
                 e.preventDefault();
@@ -30,7 +30,6 @@ const TabList = ({ files, activeId, unsaveIds, onTabClick, onCloseTab }) => {
                 className="ml-2 close-icon"
                 onClick={(e) => {
                   e.stopPropagation();
-                  e.preventDefault();
                   onCloseTab(file.id);
                 }}
               >
