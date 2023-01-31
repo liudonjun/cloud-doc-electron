@@ -1,16 +1,28 @@
-const deafultFiles = [
+const defaultFiles = [
   {
     id: '1',
-    title: '斗破苍穹',
+    title: 'first post',
+    body: '*should be aware of this*',
+    createdAt: 1563762965704
   },
   {
     id: '2',
-    title: '斗罗大陆',
+    title: 'second post',
+    body: '## this is the title',
+    createdAt: 1563762965704
   },
   {
     id: '3',
-    title: '大主宰',
+    title: '你好世界',
+    body: '### 这是另外一个小标题欧',
+    createdAt: 1563762965704
   },
-];
+  {
+    id: '4',
+    title: '你好世界',
+    body: '**粗体内容**',
+    createdAt: 1563762965704
+  }
+]
 
-export default deafultFiles;
+export default defaultFiles

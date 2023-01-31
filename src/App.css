@@ -1,3 +1,4 @@
+/* 基础样式 */
 .fileTitle {
   padding: 7px 0;
 }
@@ -5,9 +6,25 @@
 .FileSearchInput {
   margin-right: 10px;
 }
+/* 去除bootstrap按钮默认样式 */
+.no-border {
+  border-radius: 0 !important;
+}
+
+/* 左侧布局样式 */
+.left-panel {
+  min-height: 100vh;
+  position: relative;
+}
 
 .c-link {
   cursor: pointer;
+}
+
+.button-group {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
 }
 
 .icon-button {
@@ -15,4 +32,12 @@
   outline: none;
   border: none;
   color: inherit;
+}
+
+.satrt-page {
+  font-size: 30px;
+  height: 300px;
+  line-height: 300px;
+  color: #ccc;
+  text-align: center;
 }

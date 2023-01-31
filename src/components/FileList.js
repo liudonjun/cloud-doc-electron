@@ -28,7 +28,7 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
     if (escPressed && editStatus) {
       closeSearch();
     }
-  }, [editStatus, enterPressed, escPressed, files, onSaveEdit, value]);
+  });
 
   useEffect(() => {
     if (editStatus) {
