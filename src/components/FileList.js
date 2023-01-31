@@ -17,11 +17,10 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
     setValue('');
   };
 
-  // TODO
   useEffect(() => {
     if (enterPressed && editStatus) {
       const editItem = files.find((item) => item.id === editStatus);
-      onSaveEdit(editItem, value);
+      onSaveEdit(editItem.id, value);
       setEditStatus(false);
       setValue('');
     }

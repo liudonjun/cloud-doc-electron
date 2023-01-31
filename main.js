@@ -12,7 +12,6 @@ app.on('ready', () => {
   let menu = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menu);
 
-  
   mainWindow = new BrowserWindow({
     width: 1600,
     height: 800,

@@ -19,12 +19,17 @@ function App() {
   const [openedFileIDs, setOpenedFileIDs] = useState([]);
   // 当前未保存的文件列表
   const [unsavedFileIDs, setUnsavedFileIDs] = useState([]);
+  // 提供搜索使用不影响右边tab
+  const [searchedFiles, setSearchedFiles] = useState([]);
   // 打开的文件集合对象
   const openedFiles = openedFileIDs.map((openID) => {
     return files.find((file) => file.id === openID);
   });
   // 选中的file对象
   const activeFile = files.find((file) => file.id === activeFileID);
+  // 区分搜索列表
+  const fileListArr = searchedFiles.length > 0 ? searchedFiles : files;
+
   // 文件列表点击事件处理
   const fileClick = (fileID) => {
     // set current active file
@@ -58,6 +63,7 @@ function App() {
     }
   };
 
+  // md编辑器change事件
   const fileChange = (id, value) => {
     const newFiles = files.map((file) => {
       if (file.id === id) {
@@ -72,26 +78,45 @@ function App() {
     }
   };
 
+  // 删除文件事件
+  const deleteFile = (id) => {
+    // filter out the current file id
+    const newFiles = files.filter((file) => file.id !== id);
+    setFiles(newFiles);
+    tabClose(id);
+  };
+
+  // 修改文件名称
+  const updateFileName = (id, title) => {
+    console.log(id, title);
+    // loop through files,and update the title
+    const newFiles = files.map((file) => {
+      if (file.id === id) {
+        file.title = title;
+      }
+      return file;
+    });
+    setFiles(newFiles);
+  };
+
+  // 搜索
+  const fileSearch = (keyword) => {
+    const newFiles = files.filter((file) => file.title.includes(keyword));
+    setSearchedFiles(newFiles);
+  };
+
   return (
     <div className="App container-fluid px-0">
       <div className="row no-gutters">
         <div className="col-3 left-panel">
-          <FileSearch
-            onFileSearch={(value) => {
-              console.log(value);
-            }}
-          />
+          <FileSearch onFileSearch={fileSearch} />
           <FileList
-            files={files}
+            files={fileListArr}
             onFileClick={(fileID) => {
               fileClick(fileID);
             }}
-            onSaveEdit={(editItem, value) => {
-              console.log(editItem, value);
-            }}
-            onFileDelete={(value) => {
-              console.log(value);
-            }}
+            onSaveEdit={updateFileName}
+            onFileDelete={deleteFile}
           />
           <div className="row no-gutters button-group">
             <div className="col">

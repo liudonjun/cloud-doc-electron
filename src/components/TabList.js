@@ -17,8 +17,7 @@ const TabList = ({ files, activeId, unsaveIds, onTabClick, onCloseTab }) => {
         });
         return (
           <li className="nav-item" key={file.id}>
-            <a
-              href="#"
+            <span
               className={fClassName}
               onClick={(e) => {
                 e.preventDefault();
@@ -36,7 +35,7 @@ const TabList = ({ files, activeId, unsaveIds, onTabClick, onCloseTab }) => {
                 <FontAwesomeIcon icon={faTimes} />
               </span>
               {withUnsavedMark && <span className="rounded-circle ml-2 unsaved-icon"></span>}
-            </a>
+            </span>
           </li>
         );
       })}
