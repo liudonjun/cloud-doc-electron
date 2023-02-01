@@ -9,6 +9,7 @@ import BottomBtn from './components/BottomBtn';
 import TabList from './components/TabList';
 import SimpleMDE from 'react-simplemde-editor';
 import deafultFiles from './utils/defaultFiles';
+import uuidv4 from 'uuid/v4';
 
 function App() {
   // 初始文件
@@ -93,6 +94,7 @@ function App() {
     const newFiles = files.map((file) => {
       if (file.id === id) {
         file.title = title;
+        file.isNew = false;
       }
       return file;
     });
@@ -103,6 +105,23 @@ function App() {
   const fileSearch = (keyword) => {
     const newFiles = files.filter((file) => file.title.includes(keyword));
     setSearchedFiles(newFiles);
+  };
+
+  // 新建文件
+  const createNewFile = () => {
+    const newID = uuidv4();
+    const newFiles = [
+      ...files,
+      {
+        id: newID,
+        title: '',
+        body: '## create MaskDown 文档',
+        createdAt: new Date().getTime(),
+        isNew: true,
+      },
+    ];
+
+    setFiles(newFiles);
   };
 
   return (
@@ -120,7 +139,12 @@ function App() {
           />
           <div className="row no-gutters button-group">
             <div className="col">
-              <BottomBtn icon={faPlus} text="新建" colorClass="btn-primary" />
+              <BottomBtn
+                icon={faPlus}
+                text="新建"
+                onBtnClik={createNewFile}
+                colorClass="btn-primary"
+              />
             </div>
             <div className="col">
               <BottomBtn icon={faFileImport} text="导入" colorClass="btn-success" />
