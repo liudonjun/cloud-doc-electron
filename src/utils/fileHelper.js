@@ -1,4 +1,4 @@
-const fs = winwow.require('fs').promises;
+const fs = window.require('fs').promises;
 
 const fileHelper = {
   readFile: (path) => fs.readFile(path, { encoding: 'utf8' }),

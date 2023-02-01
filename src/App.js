@@ -11,11 +11,15 @@ import TabList from './components/TabList';
 import SimpleMDE from 'react-simplemde-editor';
 import deafultFiles from './utils/defaultFiles';
 import uuidv4 from 'uuid/v4';
+import fileHelper from './utils/fileHelper';
+
+// require nodejs modules
+const { join } = window.require('path');
+const { remote } = window.require('electron');
 
 function App() {
   // 初始文件
   const [files, setFiles] = useState(flattenArr(deafultFiles));
-  console.log(files);
   // 当前被激活的文件
   const [activeFileID, setActiveFileID] = useState(null);
   // 当前打开的文件列表
@@ -28,7 +32,8 @@ function App() {
   const openedFiles = openedFileIDs.map((openID) => files[openID]);
   // map 转原始数据集合
   const filesArr = objToArr(files);
-  console.log(filesArr);
+  // 文档保存地址
+  const savedLocation = remote.app.getPath('documents');
   // 选中的file对象
   const activeFile = files[activeFileID];
   // 区分搜索列表
@@ -79,15 +84,36 @@ function App() {
   // 删除文件事件
   const deleteFile = (id) => {
     // filter out the current file id
-    delete files[id];
-    setFiles(files);
-    tabClose(id);
+    if (files[id].isNew) {
+      delete files[id];
+      setFiles(files);
+      tabClose(id);
+    } else {
+      fileHelper.deleteFile(join(savedLocation, `${files[id].title}.md`)).then(() => {
+        delete files[id];
+        setFiles(files);
+        tabClose(id);
+      });
+    }
   };
 
   // 修改文件名称
-  const updateFileName = (id, title) => {
+  const updateFileName = (id, title, isNew) => {
     const modifiedFile = { ...files[id], title, isNew: false };
-    setFiles({ ...files, [id]: modifiedFile });
+    if (isNew) {
+      fileHelper.writeFile(join(savedLocation, `${title}.md`), files[id].body).then(() => {
+        setFiles({ ...files, [id]: modifiedFile });
+      });
+    } else {
+      fileHelper
+        .renameFile(
+          join(savedLocation, `${files[id].title}.md`),
+          join(savedLocation, `${title}.md`)
+        )
+        .then(() => {
+          setFiles({ ...files, [id]: modifiedFile });
+        });
+    }
   };
 
   // 搜索
@@ -108,6 +134,15 @@ function App() {
     };
 
     setFiles({ ...files, [newID]: newFile });
+  };
+
+  // 保存文件
+  const saveCurrentFile = () => {
+    fileHelper
+      .writeFile(join(savedLocation, `${activeFile.title}.md`), activeFile.body)
+      .then(() => {
+        setUnsavedFileIDs(unsavedFileIDs.filter((id) => id !== activeFile.id));
+      });
   };
 
   return (
@@ -159,6 +194,12 @@ function App() {
                   minHeight: '600px',
                   spellChecker: false,
                 }}
+              />
+              <BottomBtn
+                icon={faPlus}
+                text="保存"
+                onBtnClik={saveCurrentFile}
+                colorClass="btn-primary"
               />
               {/* { activeFile.isSynced && 
                 <span className="sync-status">已同步，上次同步{timestampToString(activeFile.updatedAt)}</span>
