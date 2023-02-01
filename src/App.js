@@ -16,10 +16,32 @@ import fileHelper from './utils/fileHelper';
 // require nodejs modules
 const { join } = window.require('path');
 const { remote } = window.require('electron');
+const Store = window.require('electron-store');
+
+// 实例化
+const fileStore = new Store({ 'name': 'files Data' });
+
+const saveFilesToStore = (files) => {
+  // 不需要把所有的信息都存储在store里面
+  const filesStoreObj = objToArr(files).reduce((result, file) => {
+    const { id, path, title, createAt } = file;
+    result[id] = {
+      id,
+      path,
+      title,
+      createAt,
+    };
+    return result;
+  }, {});
+  fileStore.set('files', filesStoreObj);
+};
+
+// store 数据存储位置
+// console.log(remote.app.getPath ('userData'))
 
 function App() {
   // 初始文件
-  const [files, setFiles] = useState(flattenArr(deafultFiles));
+  const [files, setFiles] = useState(fileStore.get('files') || {});
   // 当前被激活的文件
   const [activeFileID, setActiveFileID] = useState(null);
   // 当前打开的文件列表
@@ -83,36 +105,30 @@ function App() {
 
   // 删除文件事件
   const deleteFile = (id) => {
-    // filter out the current file id
-    if (files[id].isNew) {
+    fileHelper.deleteFile(files[id].path).then(() => {
       delete files[id];
       setFiles(files);
+      saveFilesToStore(files);
       tabClose(id);
-    } else {
-      fileHelper.deleteFile(join(savedLocation, `${files[id].title}.md`)).then(() => {
-        delete files[id];
-        setFiles(files);
-        tabClose(id);
-      });
-    }
+    });
   };
 
   // 修改文件名称
   const updateFileName = (id, title, isNew) => {
-    const modifiedFile = { ...files[id], title, isNew: false };
+    const newPath = join(savedLocation, `${title}.md`);
+    const modifiedFile = { ...files[id], title, isNew: false, path: newPath };
+    const newFiles = { ...files, [id]: modifiedFile };
     if (isNew) {
-      fileHelper.writeFile(join(savedLocation, `${title}.md`), files[id].body).then(() => {
-        setFiles({ ...files, [id]: modifiedFile });
+      fileHelper.writeFile(newPath, files[id].body).then(() => {
+        setFiles(newFiles);
+        saveFilesToStore(newFiles);
       });
     } else {
-      fileHelper
-        .renameFile(
-          join(savedLocation, `${files[id].title}.md`),
-          join(savedLocation, `${title}.md`)
-        )
-        .then(() => {
-          setFiles({ ...files, [id]: modifiedFile });
-        });
+      const oldPath = join(savedLocation, `${title}.md`);
+      fileHelper.renameFile(oldPath, newPath).then(() => {
+        setFiles(newFiles);
+        saveFilesToStore(newFiles);
+      });
     }
   };
 
