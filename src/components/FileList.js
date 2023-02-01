@@ -5,6 +5,7 @@ import { faEdit, faTrash, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faMarkdown } from '@fortawesome/free-brands-svg-icons';
 import useKeyPress from '../hooks/useKeyPress';
 import useContextMenu from '../hooks/useContextMenu';
+import { getParentNode } from '../utils/helper';
 
 // load nodejs modules
 const { remote } = window.require('electron');
@@ -27,20 +28,40 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
     }
   };
 
-  useContextMenu([
-    {
-      label: '重命名',
-      click: () => {},
-    },
-    {
-      label: '删除',
-      click: () => {},
-    },
-    {
-      label: '测试',
-      click: () => {},
-    },
-  ]);
+  const clickedItem = useContextMenu(
+    [
+      {
+        label: '打开',
+        click: () => {
+          const parentElement = getParentNode(clickedItem.current, 'file-item');
+          if (parentElement) {
+            onFileClick(parentElement.dataset.id);
+          }
+        },
+      },
+      {
+        label: '重命名',
+        click: () => {
+          const parentElement = getParentNode(clickedItem.current, 'file-item');
+          if (parentElement) {
+            setEditStatus(parentElement.dataset.id);
+            setValue(parentElement.dataset.title);
+          }
+        },
+      },
+      {
+        label: '删除',
+        click: () => {
+          const parentElement = getParentNode(clickedItem.current, 'file-item');
+          if (parentElement) {
+            onFileDelete(parentElement.dataset.id);
+          }
+        },
+      },
+    ],
+    '.file-list',
+    [files]
+  );
 
   useEffect(() => {
     const editItem = files.find((item) => item.id === editStatus);
@@ -69,11 +90,13 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
   }, [editStatus]);
 
   return (
-    <ul className="list-group list-group-flush">
+    <ul className="list-group list-group-flush file-list">
       {files.map((file) => (
         <li
           className="list-group-item bg-light justify-content-between d-flex row align-items-center file-item flex-nowrap no-gutters"
           key={file.id}
+          data-id={file.id}
+          data-title={file.title}
         >
           {file.id !== editStatus && !file.isNew && (
             <>
