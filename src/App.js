@@ -102,10 +102,13 @@ function App() {
 
   // md编辑器change事件
   const fileChange = (id, value) => {
-    const newFile = { ...files[id], body: value };
-    setFiles({ ...files, [id]: newFile });
-    if (!unsavedFileIDs.includes(id)) {
-      setUnsavedFileIDs([...unsavedFileIDs, id]);
+    if (value !== files[id].body) {
+      const newFile = { ...files[id], body: value };
+      setFiles({ ...files, [id]: newFile });
+      // update unsavedIDs
+      if (!unsavedFileIDs.includes(id)) {
+        setUnsavedFileIDs([...unsavedFileIDs, id]);
+      }
     }
   };
 
@@ -168,9 +171,11 @@ function App() {
 
   // 保存文件
   const saveCurrentFile = () => {
-    fileHelper.writeFile(join(activeFile.path), activeFile.body).then(() => {
-      setUnsavedFileIDs(unsavedFileIDs.filter((id) => id !== activeFile.id));
-    });
+    fileHelper
+      .writeFile(join(savedLocation, `${activeFile.title}.md`), activeFile.body)
+      .then(() => {
+        setUnsavedFileIDs(unsavedFileIDs.filter((id) => id !== activeFile.id));
+      });
   };
 
   // 导入文件
