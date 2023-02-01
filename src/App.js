@@ -1,7 +1,7 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'easymde/dist/easymde.min.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons';
 import { flattenArr, objToArr } from './utils/helper';
 import FileSearch from './components/FileSearch';
@@ -14,12 +14,13 @@ import fileHelper from './utils/fileHelper';
 
 // require nodejs modules
 const { join, basename, extname, dirname } = window.require('path');
-const { remote } = window.require('electron');
+const { remote, ipcRenderer } = window.require('electron');
 const Store = window.require('electron-store');
 
 // 实例化
 const fileStore = new Store({ 'name': 'files Data' });
 
+// 数据持久化
 const saveFilesToStore = (files) => {
   // 不需要把所有的信息都存储在store里面
   const filesStoreObj = objToArr(files).reduce((result, file) => {
@@ -219,6 +220,14 @@ function App() {
       }
     );
   };
+
+  useEffect(() => {
+    const callBack = () => {
+      console.log('hello form menu');
+    };
+
+    ipcRenderer.on('create-new-file', callBack);
+  });
 
   return (
     <div className="App container-fluid px-0">
