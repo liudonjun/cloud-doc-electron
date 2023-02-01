@@ -1,18 +1,10 @@
-const fs = require('fs').promises;
-const path = require('path');
+const fs = winwow.require('fs').promises;
 
 const fileHelper = {
   readFile: (path) => fs.readFile(path, { encoding: 'utf8' }),
   writeFile: (path, content) => fs.writeFile(path, content, { encoding: 'utf8' }),
+  renameFile: (path, newPath) => fs.rename(path, newPath),
+  deleteFile: (path) => fs.unlink(path),
 };
 
-const testPath = path.join(__dirname, 'helper.js');
-const testWritePath = path.join(__dirname, 'hello.md');
-
-fileHelper.readFile(testPath).then((data) => {
-  console.log(data);
-});
-
-fileHelper.writeFile(testWritePath, '## hello world !').then(() => {
-  console.log('写入成功');
-});
+export default fileHelper;
