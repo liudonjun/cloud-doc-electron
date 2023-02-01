@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'easymde/dist/easymde.min.css';
 import React, { useState } from 'react';
 import { faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons';
+import { flattenArr, objToArr } from './utils/helper';
 import FileSearch from './components/FileSearch';
 import FileList from './components/FileList';
 import BottomBtn from './components/BottomBtn';
@@ -13,7 +14,8 @@ import uuidv4 from 'uuid/v4';
 
 function App() {
   // 初始文件
-  const [files, setFiles] = useState(deafultFiles);
+  const [files, setFiles] = useState(flattenArr(deafultFiles));
+  console.log(files);
   // 当前被激活的文件
   const [activeFileID, setActiveFileID] = useState(null);
   // 当前打开的文件列表
@@ -23,13 +25,14 @@ function App() {
   // 提供搜索使用不影响右边tab
   const [searchedFiles, setSearchedFiles] = useState([]);
   // 打开的文件集合对象
-  const openedFiles = openedFileIDs.map((openID) => {
-    return files.find((file) => file.id === openID);
-  });
+  const openedFiles = openedFileIDs.map((openID) => files[openID]);
+  // map 转原始数据集合
+  const filesArr = objToArr(files);
+  console.log(filesArr);
   // 选中的file对象
-  const activeFile = files.find((file) => file.id === activeFileID);
+  const activeFile = files[activeFileID];
   // 区分搜索列表
-  const fileListArr = searchedFiles.length > 0 ? searchedFiles : files;
+  const fileListArr = searchedFiles.length > 0 ? searchedFiles : filesArr;
 
   // 文件列表点击事件处理
   const fileClick = (fileID) => {
@@ -66,14 +69,8 @@ function App() {
 
   // md编辑器change事件
   const fileChange = (id, value) => {
-    const newFiles = files.map((file) => {
-      if (file.id === id) {
-        file.body = value;
-      }
-      return file;
-    });
-    setFiles(newFiles);
-
+    const newFile = { ...files[id], body: value };
+    setFiles({ ...files, [id]: newFile });
     if (!unsavedFileIDs.includes(id)) {
       setUnsavedFileIDs([...unsavedFileIDs, id]);
     }
@@ -82,46 +79,35 @@ function App() {
   // 删除文件事件
   const deleteFile = (id) => {
     // filter out the current file id
-    const newFiles = files.filter((file) => file.id !== id);
-    setFiles(newFiles);
+    delete files[id];
+    setFiles(files);
     tabClose(id);
   };
 
   // 修改文件名称
   const updateFileName = (id, title) => {
-    console.log(id, title);
-    // loop through files,and update the title
-    const newFiles = files.map((file) => {
-      if (file.id === id) {
-        file.title = title;
-        file.isNew = false;
-      }
-      return file;
-    });
-    setFiles(newFiles);
+    const modifiedFile = { ...files[id], title, isNew: false };
+    setFiles({ ...files, [id]: modifiedFile });
   };
 
   // 搜索
   const fileSearch = (keyword) => {
-    const newFiles = files.filter((file) => file.title.includes(keyword));
+    const newFiles = filesArr.filter((file) => file.title.includes(keyword));
     setSearchedFiles(newFiles);
   };
 
   // 新建文件
   const createNewFile = () => {
     const newID = uuidv4();
-    const newFiles = [
-      ...files,
-      {
-        id: newID,
-        title: '',
-        body: '## create MaskDown 文档',
-        createdAt: new Date().getTime(),
-        isNew: true,
-      },
-    ];
+    const newFile = {
+      id: newID,
+      title: '',
+      body: '## create MaskDown 文档',
+      createdAt: new Date().getTime(),
+      isNew: true,
+    };
 
-    setFiles(newFiles);
+    setFiles({ ...files, [newID]: newFile });
   };
 
   return (
