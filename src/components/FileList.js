@@ -5,6 +5,10 @@ import { faEdit, faTrash, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faMarkdown } from '@fortawesome/free-brands-svg-icons';
 import useKeyPress from '../hooks/useKeyPress';
 
+// load nodejs modules
+const { remote } = window.require('electron');
+const { Menu, MenuItem } = remote;
+
 const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
   const [editStatus, setEditStatus] = useState(false);
   const [value, setValue] = useState('');
@@ -21,6 +25,38 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
       onFileDelete(editItem.id);
     }
   };
+
+  // 菜单
+  useEffect(() => {
+    const menu = new Menu();
+    menu.append(
+      new MenuItem({
+        label: '重命名',
+        click: () => {},
+      })
+    );
+    menu.append(
+      new MenuItem({
+        label: '删除',
+        click: () => {},
+      })
+    );
+    menu.append(
+      new MenuItem({
+        label: '测试',
+        click: () => {},
+      })
+    );
+
+    const handleContextMenu = (e) => {
+      menu.popup({ window: remote.getCurrentWindow() });
+    };
+
+    window.addEventListener('contextmenu', handleContextMenu);
+    return () => {
+      window.removeEventListener('contextmenu', handleContextMenu);
+    };
+  });
 
   useEffect(() => {
     const editItem = files.find((item) => item.id === editStatus);
