@@ -112,12 +112,18 @@ function App() {
 
   // 删除文件事件
   const deleteFile = (id) => {
-    fileHelper.deleteFile(files[id].path).then(() => {
-      delete files[id];
-      setFiles(files);
-      saveFilesToStore(files);
-      tabClose(id);
-    });
+    if (files[id].isNew) {
+      // warn
+      const { [id]: value, ...afterDelete } = files;
+      setFiles(afterDelete);
+    } else {
+      fileHelper.deleteFile(files[id].path).then(() => {
+        const { [id]: value, ...afterDelete } = files;
+        setFiles(afterDelete);
+        saveFilesToStore(afterDelete);
+        tabClose(id);
+      });
+    }
   };
 
   // 修改文件名称
