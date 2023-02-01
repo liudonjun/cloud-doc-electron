@@ -9,12 +9,11 @@ import FileList from './components/FileList';
 import BottomBtn from './components/BottomBtn';
 import TabList from './components/TabList';
 import SimpleMDE from 'react-simplemde-editor';
-import deafultFiles from './utils/defaultFiles';
 import uuidv4 from 'uuid/v4';
 import fileHelper from './utils/fileHelper';
 
 // require nodejs modules
-const { join } = window.require('path');
+const { join, basename, extname, dirname } = window.require('path');
 const { remote } = window.require('electron');
 const Store = window.require('electron-store');
 
@@ -128,7 +127,9 @@ function App() {
 
   // 修改文件名称
   const updateFileName = (id, title, isNew) => {
-    const newPath = join(savedLocation, `${title}.md`);
+    const newPath = isNew
+      ? join(savedLocation, `${title}.md`)
+      : join(dirname(files[id].path), `${title}.md`);
     const modifiedFile = { ...files[id], title, isNew: false, path: newPath };
     const newFiles = { ...files, [id]: modifiedFile };
     if (isNew) {
@@ -137,7 +138,7 @@ function App() {
         saveFilesToStore(newFiles);
       });
     } else {
-      const oldPath = join(savedLocation, `${title}.md`);
+      const oldPath = files[id].path;
       fileHelper.renameFile(oldPath, newPath).then(() => {
         setFiles(newFiles);
         saveFilesToStore(newFiles);
@@ -167,11 +168,50 @@ function App() {
 
   // 保存文件
   const saveCurrentFile = () => {
-    fileHelper
-      .writeFile(join(savedLocation, `${activeFile.title}.md`), activeFile.body)
-      .then(() => {
-        setUnsavedFileIDs(unsavedFileIDs.filter((id) => id !== activeFile.id));
-      });
+    fileHelper.writeFile(join(activeFile.path), activeFile.body).then(() => {
+      setUnsavedFileIDs(unsavedFileIDs.filter((id) => id !== activeFile.id));
+    });
+  };
+
+  // 导入文件
+  const importFiles = () => {
+    remote.dialog.showOpenDialog(
+      {
+        title: '选择导入的 MarkDown 文件',
+        properties: ['openFile', 'multiSelections'],
+        filters: [{ name: 'Markdown files', extensions: ['md'] }],
+      },
+      (paths) => {
+        if (Array.isArray(paths)) {
+          // filter out the path we already have in electron store
+          const filteredPaths = paths.filter((path) => {
+            const alreadyAdded = Object.values(files).find((file) => {
+              return file.path === path;
+            });
+            return !alreadyAdded;
+          });
+          // extend the path array to an array contains files info
+          const importFilesArr = filteredPaths.map((path) => {
+            return {
+              id: uuidv4(),
+              title: basename(path, extname(path)),
+              path,
+            };
+          });
+          // get the new files object in flattenArr
+          const newFiles = { ...files, ...flattenArr(importFilesArr) };
+          setFiles(newFiles);
+          saveFilesToStore(newFiles);
+          if (importFilesArr.length > 0) {
+            remote.dialog.showMessageBox({
+              type: 'info',
+              title: `成功导入了${importFilesArr.length}个文件`,
+              message: `成功导入了${importFilesArr.length}个文件`,
+            });
+          }
+        }
+      }
+    );
   };
 
   return (
@@ -197,7 +237,12 @@ function App() {
               />
             </div>
             <div className="col">
-              <BottomBtn icon={faFileImport} text="导入" colorClass="btn-success" />
+              <BottomBtn
+                icon={faFileImport}
+                text="导入"
+                onBtnClik={importFiles}
+                colorClass="btn-success"
+              />
             </div>
           </div>
         </div>

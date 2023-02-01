@@ -15,6 +15,7 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
   const closeSearch = (editItem) => {
     setEditStatus(false);
     setValue('');
+    console.log(editItem);
     // if we are editing isNew
     if (editItem.isNew) {
       onFileDelete(editItem.id);
@@ -102,8 +103,8 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
                 }}
               />
               <button
-                onClick={(file) => {
-                  closeSearch(file.id);
+                onClick={() => {
+                  closeSearch(file);
                 }}
                 type="button"
                 className="icon-button col-2"
