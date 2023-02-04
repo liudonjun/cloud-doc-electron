@@ -111,27 +111,6 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
               >
                 {file.title}
               </span>
-              <button type="button" className="icon-button col-1">
-                <FontAwesomeIcon
-                  onClick={() => {
-                    setEditStatus(file.id);
-                    setValue(file.title);
-                  }}
-                  title="编辑"
-                  size="lg"
-                  icon={faEdit}
-                />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onFileDelete(file.id);
-                }}
-                title="删除"
-                className="icon-button col-1"
-              >
-                <FontAwesomeIcon size="lg" icon={faTrash} />
-              </button>
             </>
           )}
           {(file.id === editStatus || file.isNew) && (

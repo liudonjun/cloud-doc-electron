@@ -11,6 +11,7 @@ import TabList from './components/TabList';
 import SimpleMDE from 'react-simplemde-editor';
 import uuidv4 from 'uuid/v4';
 import fileHelper from './utils/fileHelper';
+import useIpcRenderer from './hooks/useIpcRenderer';
 
 // require nodejs modules
 const { join, basename, extname, dirname } = window.require('path');
@@ -221,12 +222,15 @@ function App() {
     );
   };
 
-  useEffect(() => {
-    const callBack = () => {
-      console.log('hello form menu');
-    };
-
-    ipcRenderer.on('create-new-file', callBack);
+  // 菜单栏事件监听
+  useIpcRenderer({
+    'create-new-file': createNewFile,
+    'import-file': importFiles,
+    'save-edit-file': saveCurrentFile,
+    // 'active-file-uploaded': activeFileUploaded,
+    // 'file-downloaded': activeFileDownloaded,
+    // 'files-uploaded': filesUploaded,
+    // 'loading-status': (message, status) => { setLoading(status) }
   });
 
   return (
@@ -283,12 +287,6 @@ function App() {
                   minHeight: '600px',
                   spellChecker: false,
                 }}
-              />
-              <BottomBtn
-                icon={faPlus}
-                text="保存"
-                onBtnClik={saveCurrentFile}
-                colorClass="btn-primary"
               />
               {/* { activeFile.isSynced && 
                 <span className="sync-status">已同步，上次同步{timestampToString(activeFile.updatedAt)}</span>

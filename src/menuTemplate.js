@@ -154,6 +154,10 @@ let template = [{
       label: '学习更多',
       click: () => { shell.openExternal('http://electron.atom.io') }
     },
+    {
+      label: '关于我',
+      click: () => { shell.openExternal('https://liudongjun.cn') }
+    },
   ]
 },
 ]
